@@ -17,7 +17,7 @@ find . \
   -not -path "./.git*" \
   -not -path "./.github*" \
   -not -path "./.scripts*" \
-  -exec cp -t $DEST {} +
+  -exec cp -r -t $DEST {} +
 
 zip -r "$ARCHIVE_NAME" $DEST
 

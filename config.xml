@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>shootime</name>
+    <displayName><![CDATA[Shootime]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Your turnkey shoot without moving. We create the most beautiful photo content, packshots & videos for your e-commerce platforms and marketing campaigns.]]></description>
+    <author><![CDATA[Shootime]]></author>
+    <tab><![CDATA[administration]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>

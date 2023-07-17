@@ -56,20 +56,6 @@ jobs:
         with:
           php-version: '7.3'
 
-      # Add vendor folder in cache to make next builds faster
-      - name: Cache vendor folder
-        uses: actions/cache@v1
-        with:
-          path: vendor
-          key: php-${{ hashFiles('composer.lock') }}
-
-      # Add composer local folder in cache to make next builds faster
-      - name: Cache composer folder
-        uses: actions/cache@v1
-        with:
-          path: ~/.composer/cache
-          key: php-composer-cache
-
       - run: composer install
 
       # Docker images prestashop/prestashop may be used, even if the shop remains uninstalled
@@ -88,17 +74,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Cache vendor folder
-        uses: actions/cache@v1
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          path: vendor
-          key: php-${{ hashFiles('composer.lock') }}
-
-      - name: Cache composer folder
-        uses: actions/cache@v1
-        with:
-          path: ~/.composer/cache
-          key: php-composer-cache
+          php-version: '7.3'
 
       - run: composer install
 

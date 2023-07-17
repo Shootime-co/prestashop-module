@@ -1,0 +1,13 @@
+{
+    "name": "shootime/prestashop-module",
+    "description": "PrestaShop module for Shootime.",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Bruno Alla",
+            "email": "shootime@browniebroke.com"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {}
+}

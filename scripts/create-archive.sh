@@ -2,9 +2,10 @@
 
 VERSION=$1
 ARCHIVE_NAME=$2
+DEST=shootime
 
 sed -i "s/0.0.0/${VERSION}/g" config*.xml shootime.php
-mkdir -p shootime
+mkdir -p $DEST
 
 find . -not -name "shootime" \
        -not -name ".gitignore" \
@@ -13,8 +14,8 @@ find . -not -name "shootime" \
        -not -path ".git/*" \
        -not -path ".github/*" \
        -not -path ".scripts/*" \
-       -exec cp -t dest/ {} +
+       -exec cp -t $DEST {} +
 
-zip -r "$ARCHIVE_NAME" shootime
+zip -r "$ARCHIVE_NAME" $DEST
 
 echo "Created $ARCHIVE_NAME"

@@ -82,11 +82,7 @@ jobs:
         run: |
           VERSION=${{ github.ref_name || github.sha }}
           ARCHIVE_NAME=shootime.${VERSION}.zip
-
-          sed -i "s/0.0.0/${VERSION}/g" config*.xml shootime.php
-          mkdir -p shootime
-          cp -r !(shootime|.git|.github|.gitignore|.pre-commit-config.yaml|.php-cs-fixer.dist.php) shootime
-          zip -r ${ARCHIVE_NAME} shootime
+          ./github/create-archive.sh ${VERSION} ${ARCHIVE_NAME}
           echo "archive_name=${ARCHIVE_NAME}" >> $GITHUB_OUTPUT
 
       - name: Create Release

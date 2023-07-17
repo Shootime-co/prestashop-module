@@ -12,6 +12,7 @@ find . -not -name "shootime" \
        -not -name ".php-cs-fixer.dist.php" \
        -not -path ".git/*" \
        -not -path ".github/*" \
+       -not -path ".scripts/*" \
        -exec cp -t dest/ {} +
 
 zip -r "$ARCHIVE_NAME" shootime

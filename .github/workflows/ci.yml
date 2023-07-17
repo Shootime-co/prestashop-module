@@ -82,7 +82,8 @@ jobs:
         run: |
           VERSION=${{ github.ref_name || github.sha }}
           ARCHIVE_NAME=shootime.${VERSION}.zip
-          ./github/create-archive.sh ${VERSION} ${ARCHIVE_NAME}
+          ls -la
+          scripts/create-archive.sh ${VERSION} ${ARCHIVE_NAME}
           echo "archive_name=${ARCHIVE_NAME}" >> $GITHUB_OUTPUT
 
       - name: Create Release

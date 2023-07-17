@@ -78,7 +78,7 @@ jobs:
         run: rm -rf .git .github .gitignore .pre-commit-config.yaml .php-cs-fixer.dist.php
 
       - name: Create zipfile to upload
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: shootime
           path: ../

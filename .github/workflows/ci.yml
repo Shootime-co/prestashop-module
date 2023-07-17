@@ -80,7 +80,7 @@ jobs:
       - name: Create archive
         run: zip -r shootime.zip *
 
-      - name: Upload Archive as artefact
+      - name: Upload Archive as artifact
         uses: actions/upload-artifact@v3
         with:
           path: shootime.zip

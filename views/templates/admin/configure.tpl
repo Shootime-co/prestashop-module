@@ -34,16 +34,16 @@
 <div id="module-config">
 
 	<div class="panel">
-		<h3><i class="icon icon-credit-card"></i> {l s='Example with PrestaShop Integration Framework' mod='fullsaasappjs'}</h3>
+		<h3><i class="icon icon-credit-card"></i> {l s='Example with PrestaShop Integration Framework' mod='shootime'}</h3>
 		<p>
-			<strong>{l s='Shootime' mod='fullsaasappjs'}</strong><br />
-			{l s='Please associate your shop with PrestaShop Accounts.' mod='fullsaasappjs'}<br />
-			{l s='Then agree to share your data with PrestaShop CloudSync' mod='fullsaasappjs'}<br />
-			{l s='Finally, choose your subscription plan in PrestaShop Billing' mod='fullsaasappjs'}
+			<strong>{l s='Shootime' mod='shootime'}</strong><br />
+			{l s='Please associate your shop with PrestaShop Accounts.' mod='shootime'}<br />
+			{l s='Then agree to share your data with PrestaShop CloudSync' mod='shootime'}<br />
+			{l s='Finally, choose your subscription plan in PrestaShop Billing' mod='shootime'}
 		</p>
 		<br />
 		<p>
-			{l s='Your turnkey shoot without moving. We create the most beautiful photo content, packshots & videos for your e-commerce platforms and marketing campaigns.' mod='fullsaasappjs'}
+			{l s='Your turnkey shoot without moving. We create the most beautiful photo content, packshots & videos for your e-commerce platforms and marketing campaigns.' mod='shootime'}
 		</p>
 	</div>
 </div>

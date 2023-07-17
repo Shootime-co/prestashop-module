@@ -11,7 +11,7 @@ services:
     class: Context
     public: true
     factory: [ 'Context', 'getContext' ]
-    
+
   #####################
   # PS Account
   shootime.ps_accounts_installer:

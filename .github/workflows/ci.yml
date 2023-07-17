@@ -66,20 +66,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: shivammathur/setup-php@v2
+      - name: Setup PHP version
+        uses: shivammathur/setup-php@v2
         with:
           php-version: "7.2"
 
-      # Install PHP dependencies (Production ONLY)
-      - name: Install composer dependencies
+      - name: Install prod composer dependencies
         run: composer install --no-dev -o
 
-      # Remove development files
-      - name: Clean-up project
+      - name: Remove development files
         run: rm -rf .git .github .gitignore .pre-commit-config.yaml .php-cs-fixer.dist.php
 
-      # Zip files and upload to artifacts list
-      - name: Create & upload artifact
+      - name: Create zipfile to upload
         uses: actions/upload-artifact@v1
         with:
           name: shootime

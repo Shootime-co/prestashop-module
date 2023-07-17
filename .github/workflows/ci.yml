@@ -76,13 +76,12 @@ jobs:
 
       - name: Create archive
         id: zip-file
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          TAG=${{ github.ref_name }}
-          ARCHIVE_NAME=shootime.${TAG}.zip
+          VERSION=${{ github.ref_name || github.sha }}
+          ARCHIVE_NAME=shootime.${VERSION}.zip
 
           rm -rf .git .github .gitignore .pre-commit-config.yaml .php-cs-fixer.dist.php
-          sed -i "s/0.0.0/${TAG}/g" config*.xml shootime.php
+          sed -i "s/0.0.0/${VERSION}/g" config*.xml shootime.php
           zip -r ${ARCHIVE_NAME} *
           echo "archive_name=${ARCHIVE_NAME}" >> $GITHUB_OUTPUT
 

@@ -77,8 +77,10 @@ jobs:
       - name: Remove development files
         run: rm -rf .git .github .gitignore .pre-commit-config.yaml .php-cs-fixer.dist.php
 
-      - name: Create zipfile to upload
+      - name: Create archive
+        run: zip -r shootime.zip *
+
+      - name: Upload Archive as artefact
         uses: actions/upload-artifact@v3
         with:
-          name: shootime
-          path: ../
+          path: shootime.zip

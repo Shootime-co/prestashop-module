@@ -26,5 +26,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: PHP syntax checker ${{ matrix.php-version }}
-        uses: prestashop/github-action-php-lint/${{ matrix.php-version }}@master
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - name: PHP syntax check
+        run: |
+          find . -type f -name "*.php" -not -path "./vendor/*" -exec php -l -n {} \;

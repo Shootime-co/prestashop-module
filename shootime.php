@@ -45,7 +45,7 @@ class Shootime extends Module
     {
         $this->name = 'shootime';
         $this->tab = 'administration';
-        $this->version = '0.1.0';
+        $this->version = '0.0.0';
         $this->author = 'Shootime';
         $this->need_instance = 0;
 

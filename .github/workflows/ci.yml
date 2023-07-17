@@ -74,13 +74,21 @@ jobs:
       - name: Install prod composer dependencies
         run: composer install --no-dev -o
 
-      - name: Remove development files
-        run: rm -rf .git .github .gitignore .pre-commit-config.yaml .php-cs-fixer.dist.php
-
       - name: Create archive
-        run: zip -r shootime.zip *
+        id: zip-file
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG=${{ github.ref_name }}
+          ARCHIVE_NAME=shootime.${TAG}.zip
 
-      - name: Upload Archive as artifact
-        uses: actions/upload-artifact@v3
+          rm -rf .git .github .gitignore .pre-commit-config.yaml .php-cs-fixer.dist.php
+          sed -i "s/0.0.0/${TAG}/g" config*.xml shootime.php
+          zip -r ${ARCHIVE_NAME} *
+          echo "archive_name=${ARCHIVE_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          path: shootime.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: ${{ steps.zip-file.outputs.archive_name }}

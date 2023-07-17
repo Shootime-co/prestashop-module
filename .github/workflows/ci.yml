@@ -12,6 +12,17 @@ concurrency:
 
 
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit-ci/lite-action@v1.0.1
+        if: always()
+
   php-linter:
     strategy:
       fail-fast: false
@@ -33,3 +44,12 @@ jobs:
       - name: PHP syntax check
         run: |
           find . -type f -name "*.php" -not -path "./vendor/*" -exec php -l -n {} \;
+
+  php-cs-fixer:
+    name: PHP CS Fixer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: PHP-CS-Fixer
+        uses: docker://oskarstark/php-cs-fixer-ga

@@ -1,0 +1,26 @@
+{
+  "name": "shootime/prestashop-module",
+  "description": "We create the most beautiful photo content, packshots & videos for your e-commerce platforms and marketing campaigns.",
+  "author": "Shootime",
+  "license": "MIT",
+  "config": {
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "prepend-autoloader": false
+  },
+  "require": {
+    "php": ">=5.6",
+    "prestashop/prestashop-accounts-installer": "^1.0",
+    "prestashop/module-lib-service-container": "^1.4",
+    "prestashopcorp/module-lib-billing": "^3",
+    "prestashop/module-lib-mbo-installer": "^0.1"
+  },
+  "require-dev": {
+    "prestashop/php-dev-tools": "^4.2.1"
+  },
+  "autoload": {
+    "classmap": [
+      "shootime.php"
+    ]
+  }
+}

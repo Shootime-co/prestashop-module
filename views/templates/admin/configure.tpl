@@ -23,26 +23,68 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
-<div class="panel">
-	<h3><i class="icon icon-credit-card"></i> {l s='Shootime' mod='shootime'}</h3>
-	<p>
-		<strong>{l s='Here is my new generic module!' mod='shootime'}</strong><br />
-		{l s='Thanks to PrestaShop, now I have a great module.' mod='shootime'}<br />
-		{l s='I can configure it using the following configuration form.' mod='shootime'}
-	</p>
-	<br />
-	<p>
-		{l s='This module will boost your sales!' mod='shootime'}
-	</p>
+<prestashop-accounts></prestashop-accounts>
+<div id="prestashop-cloudsync"></div>
+
+<div id="ps-billing"></div>
+<div id="ps-modal"></div>
+
+<br>
+
+<div id="module-config">
+
+	<div class="panel">
+		<h3><i class="icon icon-credit-card"></i> {l s='Example with PrestaShop Integration Framework' mod='fullsaasappjs'}</h3>
+		<p>
+			<strong>{l s='Shootime' mod='fullsaasappjs'}</strong><br />
+			{l s='Please associate your shop with PrestaShop Accounts.' mod='fullsaasappjs'}<br />
+			{l s='Then agree to share your data with PrestaShop CloudSync' mod='fullsaasappjs'}<br />
+			{l s='Finally, choose your subscription plan in PrestaShop Billing' mod='fullsaasappjs'}
+		</p>
+		<br />
+		<p>
+			{l s='Your turnkey shoot without moving. We create the most beautiful photo content, packshots & videos for your e-commerce platforms and marketing campaigns.' mod='fullsaasappjs'}
+		</p>
+	</div>
 </div>
 
-<div class="panel">
-	<h3><i class="icon icon-tags"></i> {l s='Documentation' mod='shootime'}</h3>
-	<p>
-		&raquo; {l s='You can get a PDF documentation to configure this module' mod='shootime'} :
-		<ul>
-			<li><a href="#" target="_blank">{l s='English' mod='shootime'}</a></li>
-			<li><a href="#" target="_blank">{l s='French' mod='shootime'}</a></li>
-		</ul>
-	</p>
-</div>
+<script src="{$urlAccountsCdn|escape:'htmlall':'UTF-8'}" rel=preload></script>
+<script src="{$urlCloudsync|escape:'htmlall':'UTF-8'}"></script>
+<script src="{$urlBilling|escape:'htmlall':'UTF-8'}"></script>
+
+<script>
+    window?.psaccountsVue?.init();
+
+    if(window.psaccountsVue.isOnboardingCompleted() != true)
+    {
+    	document.getElementById("module-config").style.opacity = "0.5";
+    }
+
+	// Cloud Sync
+	const cdc = window.cloudSyncSharingConsent;
+
+	cdc.init('#prestashop-cloudsync');
+	cdc.on('OnboardingCompleted', (isCompleted) => {
+		console.log('OnboardingCompleted', isCompleted);
+
+	});
+	cdc.isOnboardingCompleted((isCompleted) => {
+		console.log('Onboarding is already Completed', isCompleted);
+	});
+
+
+	window.psBilling.initialize(window.psBillingContext.context, '#ps-billing', '#ps-modal', (type, data) => {
+		// Event hook listener
+		switch (type) {
+		  case window.psBilling.EVENT_HOOK_TYPE.BILLING_INITIALIZED:
+		    console.log('Billing initialized', data);
+		    break;
+		  case window.psBilling.EVENT_HOOK_TYPE.SUBSCRIPTION_UPDATED:
+		    console.log('Sub updated', data);
+		    break;
+		  case window.psBilling.EVENT_HOOK_TYPE.SUBSCRIPTION_CANCELLED:
+		    console.log('Sub cancelled', data);
+		    break;
+		}
+	});
+</script>

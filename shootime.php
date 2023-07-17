@@ -24,18 +24,27 @@
 *  International Registered Trademark & Property of PrestaShop SA
 */
 
+use PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder;
+
 if (!defined('_PS_VERSION_')) {
     exit;
+}
+
+$autoloadPath = __DIR__ . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
 }
 
 class Shootime extends Module
 {
     protected $config_form = false;
 
+    private $container;
+
     public function __construct()
     {
         $this->name = 'shootime';
-        $this->tab = 'billing_invoicing';
+        $this->tab = 'administration';
         $this->version = '0.1.0';
         $this->author = 'Shootime';
         $this->need_instance = 0;
@@ -48,171 +57,159 @@ class Shootime extends Module
         parent::__construct();
 
         $this->displayName = $this->l('Shootime');
-        $this->description = $this->l('Votre shooting clé en main sans vous déplacer. Nous créons les plus beaux contenus photos, packshots & videos pour vos plateformes e-commerce et vos campagnes marketing.');
+        $this->description = $this->l('Your turnkey shoot without moving. We create the most beautiful photo content, packshots & videos for your e-commerce platforms and marketing campaigns.');
 
-        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.7.0', 'max' => _PS_VERSION_);
+
+        if ($this->container === null) {
+            $this->container = new \PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer(
+                $this->name,
+                $this->getLocalPath()
+            );
+        }
     }
 
-    /**
-     * Don't forget to create update methods if needed:
-     * http://doc.prestashop.com/display/PS16/Enabling+the+Auto-Update
-     */
     public function install()
     {
-        Configuration::updateValue('SHOOTIME_LIVE_MODE', false);
+        // Test if MBO is installed
+        // For more information, check the readme of mbo-lib-installer
+        $mboStatus = (new Prestashop\ModuleLibMboInstaller\Presenter)->present();
 
-        return parent::install() &&
-            $this->registerHook('header') &&
-            $this->registerHook('displayBackOfficeHeader');
+        if(!$mboStatus["isInstalled"])
+        {
+            try {
+                $mboInstaller = new Prestashop\ModuleLibMboInstaller\Installer(_PS_VERSION_);
+                /** @var boolean */
+               $result = $mboInstaller->installModule();
+
+               // Call the installation of PrestaShop Integration Framework components
+               $this->installDependencies();
+            } catch (\Exception $e) {
+                // Some errors can happen, i.e during initialization or download of the module
+                $this->context->controller->errors[] = $e->getMessage();
+                return 'Error during MBO installation';
+            }
+        }
+        else {
+            $this->installDependencies();
+        }
+
+        return parent::install();
+    }
+
+
+    /**
+     * Install PrestaShop Integration Framework Components
+     */
+    public function installDependencies()
+    {
+        $moduleManager = ModuleManagerBuilder::getInstance()->build();
+
+        /* PS Account */
+        if (!$moduleManager->isInstalled("ps_accounts")) {
+            $moduleManager->install("ps_accounts");
+        } else if (!$moduleManager->isEnabled("ps_accounts")) {
+            $moduleManager->enable("ps_accounts");
+            $moduleManager->upgrade('ps_accounts');
+        } else {
+            $moduleManager->upgrade('ps_accounts');
+        }
+
+        /* Cloud Sync - PS Eventbus */
+        if (!$moduleManager->isInstalled("ps_eventbus")) {
+            $moduleManager->install("ps_eventbus");
+        } else if (!$moduleManager->isEnabled("ps_eventbus")) {
+            $moduleManager->enable("ps_eventbus");
+            $moduleManager->upgrade('ps_eventbus');
+        } else {
+            $moduleManager->upgrade('ps_eventbus');
+        }
     }
 
     public function uninstall()
     {
-        Configuration::deleteByName('SHOOTIME_LIVE_MODE');
-
         return parent::uninstall();
     }
 
     /**
-     * Load the configuration form
+     * Load the configuration content
      */
     public function getContent()
     {
-        /**
-         * If values have been submitted in the form, process.
-         */
-        if (((bool)Tools::isSubmit('submitShootimeModule')) == true) {
-            $this->postProcess();
+        $this->context->smarty->assign('module_dir', $this->_path);
+        $moduleManager = ModuleManagerBuilder::getInstance()->build();
+
+        $accountsService = null;
+
+        try {
+            $accountsFacade = $this->getService('shootime.ps_accounts_facade');
+            $accountsService = $accountsFacade->getPsAccountsService();
+        } catch (\PrestaShop\PsAccountsInstaller\Installer\Exception\InstallerException $e) {
+            $accountsInstaller = $this->getService('shootime.ps_accounts_installer');
+            $accountsInstaller->install();
+            $accountsFacade = $this->getService('shootime.ps_accounts_facade');
+            $accountsService = $accountsFacade->getPsAccountsService();
         }
 
-        $this->context->smarty->assign('module_dir', $this->_path);
+        try {
+            Media::addJsDef([
+                'contextPsAccounts' => $accountsFacade->getPsAccountsPresenter()
+                    ->present($this->name),
+            ]);
+
+            // Retrieve Account CDN
+            $this->context->smarty->assign('urlAccountsCdn', $accountsService->getAccountsCdn());
+
+        } catch (Exception $e) {
+            $this->context->controller->errors[] = $e->getMessage();
+            return '';
+        }
+
+        if ($moduleManager->isInstalled("ps_eventbus")) {
+            $eventbusModule =  \Module::getInstanceByName("ps_eventbus");
+            if (version_compare($eventbusModule->version, '1.9.0', '>=')) {
+
+                $eventbusPresenterService = $eventbusModule->getService('PrestaShop\Module\PsEventbus\Service\PresenterService');
+
+                $this->context->smarty->assign('urlCloudsync', "https://assets.prestashop3.com/ext/cloudsync-merchant-sync-consent/latest/cloudsync-cdc.js");
+
+                Media::addJsDef([
+                    'contextPsEventbus' => $eventbusPresenterService->expose($this, ['info', 'modules', 'themes'])
+                ]);
+            }
+        }
+
+        /**********************
+         * PrestaShop Billing *
+         * *******************/
+
+        // Load context for PsBilling
+        $billingFacade = $this->getService('shootime.ps_billings_facade');
+        $partnerLogo = $this->getLocalPath() . 'logo.png';
+
+        // Billing
+        Media::addJsDef($billingFacade->present([
+            'logo' => $partnerLogo,
+            'tosLink' => 'https://www.shootime.co/legal/conditions-generales-de-vente-et-dutilisation-fr',
+            'privacyLink' => 'https://www.shootime.co/legal/privacy-fr',
+            'emailSupport' => 'hello@shootime.co',
+        ]));
+
+        $this->context->smarty->assign('urlBilling', "https://unpkg.com/@prestashopcorp/billing-cdc/dist/bundle.js");
 
         $output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
-
-        return $output.$this->renderForm();
+        return $output;
     }
 
     /**
-     * Create the form that will be displayed in the configuration of your module.
+     * Retrieve service
+     *
+     * @param string $serviceName
+     *
+     * @return mixed
      */
-    protected function renderForm()
+    public function getService($serviceName)
     {
-        $helper = new HelperForm();
-
-        $helper->show_toolbar = false;
-        $helper->table = $this->table;
-        $helper->module = $this;
-        $helper->default_form_language = $this->context->language->id;
-        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
-
-        $helper->identifier = $this->identifier;
-        $helper->submit_action = 'submitShootimeModule';
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
-            .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
-        $helper->token = Tools::getAdminTokenLite('AdminModules');
-
-        $helper->tpl_vars = array(
-            'fields_value' => $this->getConfigFormValues(), /* Add values for your inputs */
-            'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id,
-        );
-
-        return $helper->generateForm(array($this->getConfigForm()));
-    }
-
-    /**
-     * Create the structure of your form.
-     */
-    protected function getConfigForm()
-    {
-        return array(
-            'form' => array(
-                'legend' => array(
-                'title' => $this->l('Settings'),
-                'icon' => 'icon-cogs',
-                ),
-                'input' => array(
-                    array(
-                        'type' => 'switch',
-                        'label' => $this->l('Live mode'),
-                        'name' => 'SHOOTIME_LIVE_MODE',
-                        'is_bool' => true,
-                        'desc' => $this->l('Use this module in live mode'),
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
-                                'value' => true,
-                                'label' => $this->l('Enabled')
-                            ),
-                            array(
-                                'id' => 'active_off',
-                                'value' => false,
-                                'label' => $this->l('Disabled')
-                            )
-                        ),
-                    ),
-                    array(
-                        'col' => 3,
-                        'type' => 'text',
-                        'prefix' => '<i class="icon icon-envelope"></i>',
-                        'desc' => $this->l('Enter a valid email address'),
-                        'name' => 'SHOOTIME_ACCOUNT_EMAIL',
-                        'label' => $this->l('Email'),
-                    ),
-                    array(
-                        'type' => 'password',
-                        'name' => 'SHOOTIME_ACCOUNT_PASSWORD',
-                        'label' => $this->l('Password'),
-                    ),
-                ),
-                'submit' => array(
-                    'title' => $this->l('Save'),
-                ),
-            ),
-        );
-    }
-
-    /**
-     * Set values for the inputs.
-     */
-    protected function getConfigFormValues()
-    {
-        return array(
-            'SHOOTIME_LIVE_MODE' => Configuration::get('SHOOTIME_LIVE_MODE', true),
-            'SHOOTIME_ACCOUNT_EMAIL' => Configuration::get('SHOOTIME_ACCOUNT_EMAIL', 'contact@prestashop.com'),
-            'SHOOTIME_ACCOUNT_PASSWORD' => Configuration::get('SHOOTIME_ACCOUNT_PASSWORD', null),
-        );
-    }
-
-    /**
-     * Save form data.
-     */
-    protected function postProcess()
-    {
-        $form_values = $this->getConfigFormValues();
-
-        foreach (array_keys($form_values) as $key) {
-            Configuration::updateValue($key, Tools::getValue($key));
-        }
-    }
-
-    /**
-    * Add the CSS & JavaScript files you want to be loaded in the BO.
-    */
-    public function hookDisplayBackOfficeHeader()
-    {
-        if (Tools::getValue('configure') == $this->name) {
-            $this->context->controller->addJS($this->_path.'views/js/back.js');
-            $this->context->controller->addCSS($this->_path.'views/css/back.css');
-        }
-    }
-
-    /**
-     * Add the CSS & JavaScript files you want to be added on the FO.
-     */
-    public function hookHeader()
-    {
-        $this->context->controller->addJS($this->_path.'/views/js/front.js');
-        $this->context->controller->addCSS($this->_path.'/views/css/front.css');
+        return $this->container->getService($serviceName);
     }
 }

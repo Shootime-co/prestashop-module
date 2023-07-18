@@ -73,8 +73,14 @@ jobs:
       - name: Install prod composer dependencies
         run: composer install --no-dev -o
 
+      - name: Setup Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
       - name: Create archive
         id: zip-file
+        timeout-minutes: 1
         run: |
           VERSION=${{ github.ref_name || github.sha }}
           ARCHIVE_NAME=shootime.${VERSION}.zip

@@ -86,6 +86,7 @@ jobs:
           ARCHIVE_NAME=shootime.${VERSION}.zip
           ls -la
           sed -i "s/0.0.0/${VERSION}/g" config.xml shootime.php
+          rm -f vendor/symfony/config/Tests/Fixtures/ParseError.php
           python scripts/create-archive.py ${ARCHIVE_NAME}
           echo "archive_name=${ARCHIVE_NAME}" >> $GITHUB_OUTPUT
 

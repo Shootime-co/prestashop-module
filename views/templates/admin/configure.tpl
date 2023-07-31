@@ -34,7 +34,7 @@
 <div id="module-config">
 
 	<div class="panel">
-		<h3><i class="icon icon-credit-card"></i> {l s='Example with PrestaShop Integration Framework' mod='shootime'}</h3>
+		<h3><i class="icon icon-credit-card"></i> {l s='Shootime Prestashop module' mod='shootime'}</h3>
 		<p>
 			<strong>{l s='Shootime' mod='shootime'}</strong><br />
 			{l s='Please associate your shop with PrestaShop Accounts.' mod='shootime'}<br />

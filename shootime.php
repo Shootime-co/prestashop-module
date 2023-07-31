@@ -165,6 +165,7 @@ class Shootime extends Module
             return '';
         }
 
+        // Cloud Sync
         if ($moduleManager->isInstalled("ps_eventbus")) {
             $eventbusModule =  \Module::getInstanceByName("ps_eventbus");
             if (version_compare($eventbusModule->version, '1.9.0', '>=')) {

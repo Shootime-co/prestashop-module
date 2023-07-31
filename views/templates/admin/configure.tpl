@@ -62,7 +62,6 @@
 
 	// Cloud Sync
 	const cdc = window.cloudSyncSharingConsent;
-
 	cdc.init('#prestashop-cloudsync');
 	cdc.on('OnboardingCompleted', (isCompleted) => {
 		console.log('OnboardingCompleted', isCompleted);
@@ -72,7 +71,7 @@
 		console.log('Onboarding is already Completed', isCompleted);
 	});
 
-
+    // Billing
 	window.psBilling.initialize(window.psBillingContext.context, '#ps-billing', '#ps-modal', (type, data) => {
 		// Event hook listener
 		switch (type) {

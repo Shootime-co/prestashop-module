@@ -37,9 +37,12 @@
 		<h3><i class="icon icon-credit-card"></i> {l s='Shootime Prestashop module' mod='shootime'}</h3>
 		<p>
 			<strong>{l s='Shootime' mod='shootime'}</strong><br />
-			{l s='Please associate your shop with PrestaShop Accounts.' mod='shootime'}<br />
+			{l s='Please associate your shop with PrestaShop accounts' mod='shootime'}<br />
 			{l s='Then agree to share your data with PrestaShop CloudSync' mod='shootime'}<br />
 			{l s='Finally, choose your subscription plan in PrestaShop Billing' mod='shootime'}
+			{l s='This will create an account for you in Shootime (if you're not already signed up).' mod='shootime'}
+			{l s='You should receive an email to finish your account setup.' mod='shootime'}
+			{l s='This will enable you to seamlessly book photo shoots in Shootime and pay later using your PrestaShop account.' mod='shootime'}
 		</p>
 		<br />
 		<p>

@@ -30,6 +30,7 @@ services:
   # PS Billing
   shootime.ps_billings_context_wrapper:
     class: 'PrestaShopCorp\Billing\Wrappers\BillingContextWrapper'
+    public: true
     arguments:
       - '@shootime.ps_accounts_facade'
       - '@shootime.context'

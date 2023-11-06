@@ -36,19 +36,20 @@
 	<div class="panel">
 		<h3><i class="icon icon-credit-card"></i> {l s='Shootime Prestashop module' mod='shootime'}</h3>
 		<p>
-			<strong>{l s='Shootime' mod='shootime'}</strong><br />
-			{l s='Please associate your shop with PrestaShop accounts' mod='shootime'}<br />
-			{l s='Then agree to share your data with PrestaShop CloudSync' mod='shootime'}<br />
-			{l s='Finally, choose your subscription plan in PrestaShop Billing' mod='shootime'}
-		</p>
+			{l s='This module will share you PrestaShop details with Shootime, and let you purchase on Shootime using your PrestaShop billing. ' mod='shootime'}
+			{l s='Here is how to install it:' mod='shootime'}
+        </p>
+		<ol>
+			<li>{l s='Associate your shop with PrestaShop accounts' mod='shootime'}</li>
+			<li>{l s='Consent to share your PrestaShop data with Shootime' mod='shootime'}</li>
+			<li>{l s='Finally, choose your subscription plan.' mod='shootime'}</li>
+		</ol>
 		<p>
-			{l s='This will create an account for you in Shootime (if you are not already signed up).' mod='shootime'}
-			{l s='You should receive an email to finish your account setup.' mod='shootime'}
+			{l s='The subscription plan is free.' mod='shootime'}
 			{l s='This will enable you to seamlessly book photo shoots in Shootime and pay later using your PrestaShop account.' mod='shootime'}
 		</p>
-		<br />
 		<p>
-			{l s='Your turnkey shoot without moving. We create the most beautiful photo content, packshots & videos for your e-commerce platforms and marketing campaigns.' mod='shootime'}
+			{l s='You should receive an email to finish your Shootime account setup.' mod='shootime'}
 		</p>
 	</div>
 </div>

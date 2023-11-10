@@ -49,6 +49,8 @@ class Shootime extends Module
         $this->author = 'Shootime';
         $this->need_instance = 0;
 
+        $this->module_key = '55eeacd02b0c6af12c4d1ee172938638';
+
         /**
          * Set $this->bootstrap to true if your module is compliant with bootstrap (PrestaShop 1.6)
          */
